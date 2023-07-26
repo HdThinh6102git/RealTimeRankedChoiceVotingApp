@@ -1,14 +1,14 @@
-import { Logger } from '@nestjs/common';
+import {Logger, UsePipes, ValidationPipe} from '@nestjs/common';
 import {
     OnGatewayInit,
     WebSocketGateway,
     OnGatewayConnection,
-    OnGatewayDisconnect, WebSocketServer,
+    OnGatewayDisconnect, WebSocketServer, SubscribeMessage,
 } from '@nestjs/websockets';
 import { PollsService } from './polls.service';
 import {Namespace} from "socket.io";
 import {SocketWithAuth} from "./types";
-
+@UsePipes(new ValidationPipe())
 @WebSocketGateway({
     namespace: 'polls',
     cors:{
@@ -46,4 +46,9 @@ export class PollsGateway implements OnGatewayInit,
 
         // TODO - remove client from poll and send `participants_updated` event to remaining clients
     }
+    @SubscribeMessage('test')
+    async test(){
+        throw new Error('aha');
+    }
+
 }
