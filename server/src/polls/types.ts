@@ -43,7 +43,7 @@ export type AddParticipantData = {
 };
 
 // guard types
-type AuthPayload = {
+export type AuthPayload = {
     userID: string;
     pollID: string;
     name: string;
