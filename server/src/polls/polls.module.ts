@@ -6,7 +6,7 @@ import {jwtModule, redisModule} from "../modules.config";
 import {PollsRepository} from "./polls.repository";
 import {PollsGateway} from "./polls.gateway";
 @Module({
-  imports: [ConfigModule, redisModule, jwtModule],
+  imports: [ConfigModule, redisModule,jwtModule ],
   controllers: [PollsController],
   providers: [PollsService, PollsRepository, PollsGateway],
 })
