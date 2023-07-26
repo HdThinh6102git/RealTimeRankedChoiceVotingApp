@@ -26,6 +26,7 @@ export class PollsRepository{
             votesPerVoter,
             participants: {},
             nominations: {},
+            rankings: {},
             adminID: userID,
             hasStarted: false,
         };
@@ -174,6 +175,28 @@ export class PollsRepository{
 
             throw new InternalServerErrorException(
                 `Failed to remove nominationID: ${nominationID} from poll: ${pollID}`,
+            );
+        }
+    }
+
+    async startPoll(pollID: string): Promise<Poll> {
+        this.logger.log(`setting hasStarted for poll: ${pollID}`);
+
+        const key = `polls:${pollID}`;
+
+        try {
+            await this.redisClient.send_command(
+                'JSON.SET',
+                key,
+                '.hasStarted',
+                JSON.stringify(true),
+            );
+
+            return this.getPoll(pollID);
+        } catch (e) {
+            this.logger.error(`Failed set hasStarted for poll: ${pollID}`, e);
+            throw new InternalServerErrorException(
+                'The was an error starting the poll',
             );
         }
     }

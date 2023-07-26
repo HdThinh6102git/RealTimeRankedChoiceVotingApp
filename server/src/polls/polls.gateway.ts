@@ -142,4 +142,15 @@ export class PollsGateway implements OnGatewayInit,
 
         this.io.to(client.pollID).emit('poll_updated', updatedPoll);
     }
+
+
+    @UseGuards(GatewayAdminGuard)
+    @SubscribeMessage('start_vote')
+    async startVote(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+        this.logger.debug(`Attempting to start voting for poll: ${client.pollID}`);
+
+        const updatedPoll = await this.pollsService.startPoll(client.pollID);
+
+        this.io.to(client.pollID).emit('poll_updated', updatedPoll);
+    }
 }
