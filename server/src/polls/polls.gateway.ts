@@ -1,4 +1,4 @@
-import {Logger, UsePipes, ValidationPipe} from '@nestjs/common';
+import { Logger, UsePipes, ValidationPipe} from '@nestjs/common';
 import {
     OnGatewayInit,
     WebSocketGateway,
@@ -8,6 +8,7 @@ import {
 import { PollsService } from './polls.service';
 import {Namespace} from "socket.io";
 import {SocketWithAuth} from "./types";
+import {WsBadRequestException} from "../exceptions/ws-exception";
 @UsePipes(new ValidationPipe())
 @WebSocketGateway({
     namespace: 'polls',
@@ -48,7 +49,7 @@ export class PollsGateway implements OnGatewayInit,
     }
     @SubscribeMessage('test')
     async test(){
-        throw new Error('aha');
+        throw new WsBadRequestException('plain ol');
     }
 
 }
