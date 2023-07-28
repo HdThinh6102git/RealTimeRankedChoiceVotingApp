@@ -2,7 +2,7 @@ import {Inject, Injectable, InternalServerErrorException, Logger} from "@nestjs/
 import {ConfigService} from "@nestjs/config";
 import {IORedisKey} from "../redis.module";
 import {Redis} from "ioredis";
-import {AddNominationData, AddParticipantData, CreatePollData} from "./types";
+import {AddNominationData, AddParticipantData, AddParticipantRankingsData, CreatePollData} from "./types";
 import {Poll} from "shared";
 
 @Injectable()
@@ -197,6 +197,39 @@ export class PollsRepository{
             this.logger.error(`Failed set hasStarted for poll: ${pollID}`, e);
             throw new InternalServerErrorException(
                 'The was an error starting the poll',
+            );
+        }
+    }
+
+    async addParticipantRankings({
+                                     pollID,
+                                     userID,
+                                     rankings,
+                                 }: AddParticipantRankingsData): Promise<Poll> {
+        this.logger.log(
+            `Attempting to add rankings for userID/name: ${userID} to pollID: ${pollID}`,
+            rankings,
+        );
+
+        const key = `polls:${pollID}`;
+        const rankingsPath = `.rankings.${userID}`;
+
+        try {
+            await this.redisClient.send_command(
+                'JSON.SET',
+                key,
+                rankingsPath,
+                JSON.stringify(rankings),
+            );
+
+            return this.getPoll(pollID);
+        } catch (e) {
+            this.logger.error(
+                `Failed to add a rankings for userID/name: ${userID}/ to pollID: ${pollID}`,
+                rankings,
+            );
+            throw new InternalServerErrorException(
+                'There was an error starting the poll',
             );
         }
     }
