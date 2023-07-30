@@ -7,6 +7,7 @@ import Welcome from './pages/Welcome';
 import {actions, AppPage, state} from './state';
 import {WaitingRoom} from "./pages/WaitingRoom";
 import {Voting} from "./pages/Voting";
+import {Results} from "./pages/Results";
 
 const routeConfig = {
     [AppPage.Welcome]: Welcome,
@@ -14,6 +15,7 @@ const routeConfig = {
     [AppPage.Join]: Join,
     [AppPage.WaitingRoom]: WaitingRoom,
     [AppPage.Voting]: Voting,
+    [AppPage.Results]: Results,
 };
 
 const Pages: React.FC = () => {
@@ -30,8 +32,15 @@ const Pages: React.FC = () => {
         if (currentState.me?.id && currentState.poll?.hasStarted) {
             actions.setPage(AppPage.Voting);
         }
+        if (currentState.me?.id && currentState.hasVoted) {
+            actions.setPage(AppPage.Results);
+        }
         // add sequential check here
-    }, [currentState.me?.id, currentState.poll?.hasStarted]);
+    }, [
+        currentState.me?.id,
+        currentState.poll?.hasStarted,
+        currentState.hasVoted,
+    ]);
     return (
         <>
             {Object.entries(routeConfig).map(([page, Component]) => (
